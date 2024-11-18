@@ -24,6 +24,10 @@ body {
     font-size: 20px;
 }
 
+.cell.selected {
+    background-color: lightblue;
+}
+
 .cell.found {
     background-color: lightgreen;
 }
