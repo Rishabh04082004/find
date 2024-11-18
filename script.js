@@ -9,7 +9,10 @@ const gridSize = 10;
 const gridElement = document.getElementById('grid');
 const wordListElement = document.getElementById('words');
 const hintListElement = document.getElementById('hints');
+const submitButton = document.getElementById('submit-btn');
+const scoreContainer = document.getElementById('score-container');
 let selectedCells = [];
+let foundWords = [];
 
 // Create the grid
 const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
@@ -64,18 +67,12 @@ function placeWords() {
 
 function selectCell(cell) {
     if (!cell.classList.contains('found')) {
-        console.log(`Cell clicked: [${cell.dataset.row}, ${cell.dataset.col}] - ${cell.textContent}`);
-
         if (!cell.classList.contains('selected')) {
             cell.classList.add('selected');
-            console.log('Cell selected.');
             selectedCells.push(cell);
         } else {
             cell.classList.remove('selected');
-            console.log('Cell deselected.');
-            selectedCells = selectedCells.filter(
-                selectedCell => selectedCell !== cell
-            );
+            selectedCells = selectedCells.filter(selectedCell => selectedCell !== cell);
         }
         checkWord();
     }
@@ -83,16 +80,17 @@ function selectCell(cell) {
 
 function checkWord() {
     const selectedWord = selectedCells.map(cell => cell.textContent).join('');
-    console.log(`Selected word: ${selectedWord}`);
     const foundWord = wordsToFind.find(({ word }) => word === selectedWord);
 
     if (foundWord) {
-        console.log(`Word found: ${foundWord.word}`);
         selectedCells.forEach(cell => {
             cell.classList.add('found');
             cell.classList.remove('selected');
         });
         selectedCells = [];
+        if (!foundWords.includes(foundWord.word)) {
+            foundWords.push(foundWord.word);
+        }
         markWordAsFound(foundWord.word);
     }
 }
@@ -105,6 +103,13 @@ function markWordAsFound(word) {
         matchedItem.style.color = 'green';
     }
 }
+
+function showScore() {
+    const score = foundWords.length;
+    scoreContainer.innerHTML = `<h3>Your Score: ${score}/${wordsToFind.length}</h3>`;
+}
+
+submitButton.addEventListener('click', showScore);
 
 function init() {
     placeWords();
