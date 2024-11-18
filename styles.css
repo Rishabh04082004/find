@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    gap: 2px;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.cell.found {
+    background-color: lightgreen;
+}
+
+#word-list, #hint-container {
+    margin-top: 20px;
+}
