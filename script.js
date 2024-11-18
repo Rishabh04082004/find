@@ -64,11 +64,15 @@ function placeWords() {
 
 function selectCell(cell) {
     if (!cell.classList.contains('found')) {
+        console.log(`Cell clicked: [${cell.dataset.row}, ${cell.dataset.col}] - ${cell.textContent}`);
+
         if (!cell.classList.contains('selected')) {
             cell.classList.add('selected');
+            console.log('Cell selected.');
             selectedCells.push(cell);
         } else {
             cell.classList.remove('selected');
+            console.log('Cell deselected.');
             selectedCells = selectedCells.filter(
                 selectedCell => selectedCell !== cell
             );
@@ -79,9 +83,11 @@ function selectCell(cell) {
 
 function checkWord() {
     const selectedWord = selectedCells.map(cell => cell.textContent).join('');
+    console.log(`Selected word: ${selectedWord}`);
     const foundWord = wordsToFind.find(({ word }) => word === selectedWord);
 
     if (foundWord) {
+        console.log(`Word found: ${foundWord.word}`);
         selectedCells.forEach(cell => {
             cell.classList.add('found');
             cell.classList.remove('selected');
