@@ -64,34 +64,25 @@ function placeWords() {
 
 function selectCell(cell) {
     if (!cell.classList.contains('found')) {
-        cell.classList.toggle('selected');
-        const cellPosition = {
-            row: parseInt(cell.dataset.row),
-            col: parseInt(cell.dataset.col),
-            letter: cell.textContent
-        };
-
-        const cellIndex = selectedCells.findIndex(
-            (c) => c.row === cellPosition.row && c.col === cellPosition.col
-        );
-
-        if (cellIndex === -1) {
-            selectedCells.push(cellPosition);
+        if (!cell.classList.contains('selected')) {
+            cell.classList.add('selected');
+            selectedCells.push(cell);
         } else {
-            selectedCells.splice(cellIndex, 1);
+            cell.classList.remove('selected');
+            selectedCells = selectedCells.filter(
+                selectedCell => selectedCell !== cell
+            );
         }
-
         checkWord();
     }
 }
 
 function checkWord() {
-    const selectedWord = selectedCells.map(cell => cell.letter).join('');
+    const selectedWord = selectedCells.map(cell => cell.textContent).join('');
     const foundWord = wordsToFind.find(({ word }) => word === selectedWord);
 
     if (foundWord) {
-        selectedCells.forEach(({ row, col }) => {
-            const cell = document.querySelector(`[data-row='${row}'][data-col='${col}']`);
+        selectedCells.forEach(cell => {
             cell.classList.add('found');
             cell.classList.remove('selected');
         });
@@ -105,6 +96,7 @@ function markWordAsFound(word) {
     const matchedItem = wordItems.find(item => item.textContent === word);
     if (matchedItem) {
         matchedItem.style.textDecoration = 'line-through';
+        matchedItem.style.color = 'green';
     }
 }
 
