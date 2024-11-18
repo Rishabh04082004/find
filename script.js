@@ -9,12 +9,12 @@ const gridSize = 10;
 const gridElement = document.getElementById('grid');
 const wordListElement = document.getElementById('words');
 const hintListElement = document.getElementById('hints');
+let selectedCells = [];
 
 // Create the grid
 const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
 
 function fillGrid() {
-    // Fill the grid with random letters
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
             if (!grid[i][j]) {
@@ -23,7 +23,6 @@ function fillGrid() {
         }
     }
 
-    // Render the grid in the DOM
     gridElement.innerHTML = '';
     for (let i = 0; i < gridSize; i++) {
         for (let j = 0; j < gridSize; j++) {
@@ -32,6 +31,7 @@ function fillGrid() {
             cell.textContent = grid[i][j];
             cell.dataset.row = i;
             cell.dataset.col = j;
+            cell.addEventListener('click', () => selectCell(cell));
             gridElement.appendChild(cell);
         }
     }
@@ -62,11 +62,56 @@ function placeWords() {
     });
 }
 
+function selectCell(cell) {
+    if (!cell.classList.contains('found')) {
+        cell.classList.toggle('selected');
+        const cellPosition = {
+            row: parseInt(cell.dataset.row),
+            col: parseInt(cell.dataset.col),
+            letter: cell.textContent
+        };
+
+        const cellIndex = selectedCells.findIndex(
+            (c) => c.row === cellPosition.row && c.col === cellPosition.col
+        );
+
+        if (cellIndex === -1) {
+            selectedCells.push(cellPosition);
+        } else {
+            selectedCells.splice(cellIndex, 1);
+        }
+
+        checkWord();
+    }
+}
+
+function checkWord() {
+    const selectedWord = selectedCells.map(cell => cell.letter).join('');
+    const foundWord = wordsToFind.find(({ word }) => word === selectedWord);
+
+    if (foundWord) {
+        selectedCells.forEach(({ row, col }) => {
+            const cell = document.querySelector(`[data-row='${row}'][data-col='${col}']`);
+            cell.classList.add('found');
+            cell.classList.remove('selected');
+        });
+        selectedCells = [];
+        markWordAsFound(foundWord.word);
+    }
+}
+
+function markWordAsFound(word) {
+    const wordItems = Array.from(wordListElement.children);
+    const matchedItem = wordItems.find(item => item.textContent === word);
+    if (matchedItem) {
+        matchedItem.style.textDecoration = 'line-through';
+    }
+}
+
 function init() {
     placeWords();
     fillGrid();
 
-    // Add words to find and their hints to the page
     wordsToFind.forEach(({ word, hint }) => {
         const liWord = document.createElement('li');
         liWord.textContent = word;
